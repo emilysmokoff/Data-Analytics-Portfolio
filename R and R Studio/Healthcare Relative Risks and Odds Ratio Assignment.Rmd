@@ -1,0 +1,114 @@
+---
+title: "Assignment 2 - Emily Smokoff"
+output: html_document
+date: "2023-02-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading Datasets
+```{r}
+install.packages("MASS")
+install.packages("HSAUR")
+
+library("MASS")
+library("HSAUR")
+library("janitor")
+
+data("birthwt")
+data("BCG")
+
+```
+
+Low Birth Weight
+```{r}
+View(birthwt)
+
+# Question One
+lbw_proportion <- sum(birthwt$low)/nrow(birthwt)
+smokers_proportion <- sum(birthwt$smoke)/nrow(birthwt)
+birthweight_mean <- mean(birthwt$bwt)
+age_mean <- mean(birthwt$age)
+ht_proportion <- sum(birthwt$ht)/nrow(birthwt)
+
+#Question Two Part A
+birthwt$smoke_and_low <- ifelse(birthwt$low * birthwt$smoke == 1, 1, 0)
+birthwt$smoke_not_low <- ifelse(birthwt$low - birthwt$smoke == -1, 1, 0)
+birthwt$not_smoke_low <- ifelse(birthwt$low - birthwt$smoke == 1, 1, 0)
+birthwt$no_smoke_no_low <- ifelse(birthwt$low + birthwt$smoke == 0, 1, 0)
+
+rel_risk_smokers <- (sum(birthwt$smoke_and_low) / (sum(birthwt$smoke_and_low) + sum(birthwt$smoke_not_low))) / (sum(birthwt$not_smoke_low) / (sum(birthwt$not_smoke_low) + sum(birthwt$no_smoke_no_low)))
+
+#Question Two Part B
+birthwt$ht_and_low <- ifelse(birthwt$low * birthwt$ht == 1, 1, 0)
+birthwt$ht_not_low <- ifelse(birthwt$low - birthwt$ht == -1, 1, 0)
+birthwt$not_ht_low <- ifelse(birthwt$low - birthwt$ht == 1, 1, 0)
+birthwt$no_ht_no_low <- ifelse(birthwt$low + birthwt$ht == 0, 1, 0)
+
+rel_risk_ht <- (sum(birthwt$ht_and_low) / (sum(birthwt$ht_and_low) + sum(birthwt$ht_not_low))) / (sum(birthwt$not_ht_low) / (sum(birthwt$not_ht_low) + sum(birthwt$no_ht_no_low)))
+
+#Question Two Part C
+birthwt$no_pc_and_low <- ifelse(birthwt$low == 1, ifelse(birthwt$ftv == 0, 1, 0), 0)
+birthwt$no_pc_not_low <- ifelse(birthwt$low == 0, ifelse(birthwt$ftv == 0, 1, 0), 0)
+birthwt$pc_low <- ifelse(birthwt$low == 1, ifelse(birthwt$ftv > 0, 1, 0), 0)
+birthwt$pc_no_low <- ifelse(birthwt$low == 0, ifelse(birthwt$ftv > 0, 1, 0), 0)
+
+rel_risk_no_pc <- (sum(birthwt$no_pc_and_low) / (sum(birthwt$no_pc_and_low) + sum(birthwt$no_pc_not_low))) / (sum(birthwt$pc_low) / (sum(birthwt$pc_low) + sum(birthwt$pc_no_low)))
+  
+#Question Two Part D
+birthwt$undertwenty_and_low <- ifelse(birthwt$low == 1, ifelse(birthwt$age < 20, 1, 0), 0)
+birthwt$undertwenty_not_low <- ifelse(birthwt$low == 0, ifelse(birthwt$age < 20, 1, 0), 0)
+birthwt$overnineteen_low <- ifelse(birthwt$low == 1, ifelse(birthwt$age > 19, 1, 0), 0)
+birthwt$overnineteen_no_low <- ifelse(birthwt$low == 0, ifelse(birthwt$age > 19, 1, 0), 0)
+
+rel_risk_undertwenty <- (sum(birthwt$undertwenty_and_low) / (sum(birthwt$undertwenty_and_low) + sum(birthwt$undertwenty_not_low))) / (sum(birthwt$overnineteen_low) / (sum(birthwt$overnineteen_low) + sum(birthwt$overnineteen_no_low)))
+
+```
+1.) Everything rounded to fourth sig fig
+  a.) Low Birth Weight Proportion: 0.3122
+  b.) Proportion of Smokers: 0.3915
+  c.) Mean Birth Weight: 2,945 Grams
+  d.) Mean of Mothers Ages: 23.24 Years
+  e.) Proportion of Mothers with a History of Hypertension: 0.06349
+2.) Everything rounded to fifth sig fig
+  a.) Smoking Status: 1.6076
+  b.) Hypertension Status: 1.9856
+  c.) Attending 0 Prenatal Care Visits: 1.3930
+  d.) Giving Birth Before Age 20: 0.92246
+3.) From my analysis, I can draw the conclusion that attending 0 prenatal care visits, having hypertension, and being a smoker all put you at a higher relative risk for having a baby of low birth weight. I can also conclude that giving birth before the age of 20 puts you at a slightly lower risk of having a baby of low birth rate than mothers who are older than nineteen. Overall, I found the mean age in this data set to be around 23, with around 6% of moms experiencing hypertension, 31% of moms giving birth to low weight babies, and the mean birth weight being around 2945 grams. This data shows that overall there is a strong correlation between risk factors and giving birth to a baby who is low weight.
+
+Tuberculosis
+```{r}
+View(BCG)
+
+#Question 4
+BCG$vacc_noTB <- BCG$BCGVacc - BCG$BCGTB
+BCG$noVacc_noTB <- BCG$NoVacc - BCG$NoVaccTB
+
+BCG$odds_ratio <- (BCG$BCGTB / BCG$NoVaccTB) / (BCG$vacc_noTB / BCG$noVacc_noTB)
+
+table_odds_ratio <- as.table(BCG$odds_ratio)
+
+table_odds_ratio
+# Question 5
+# Plotting Year
+plot(BCG$Year, BCG$odds_ratio, main = "Examing BCG Odds Ratio Versus Years")
+# Plotting Latitude
+plot(BCG$Latitude, BCG$odds_ratio, main = "Examing BCG Odds Ratio Versus Years")
+
+# Question 7
+BCG$relative_risk <- (BCG$BCGTB / (BCG$BCGTB + BCG$vacc_noTB)) / (BCG$NoVaccTB / (BCG$NoVaccTB + BCG$noVacc_noTB))
+
+ggplot(BCG, aes(x = relative_risk, y = odds_ratio)) + geom_point()
+```
+4.) Letter Correlates to Study Number (Study 1 Odds Ratio = Results for A)
+        A         B         C         D         E         F         G         H         I         J 
+0.3911383 0.1889655 0.2500000 0.2330637 0.8032084 0.3836126 0.1951912 1.0120931 0.6239119 0.2462987 
+        K         L         M 
+0.7111658 1.5630432 0.9828076 
+5.) Will Show when you run lines of code above.
+6.) Given this analysis, my assessment on the TB Vaccines effectiveness is that for the most part, the vaccines effectiveness is very strong. This is because the odds ratio for 11 out of 13 studies is under .91, which means that the odds of contracting TB with the vaccine is less than contracting TB without the vaccine because these odd ratio calculations are all mostly under 1. Along with this, the correlation between year and latitude in relation to the odds ratio seems non existent or very slim, meaning the year and latitude (location) have minimal to no effect on the odds of the vaccines effectiveness.
+7.) Scatter Plot will show when you run lines of code under question 7 comment. 
+  a.) Analysis: Relative Risk and the Odds Ratio in this study have a positive linear correlation, meaning that if the odds ratio of a study is higher, so is the relative risk. They seem to be very similar decimal places to each other. 
