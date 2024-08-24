@@ -1,1 +1,3 @@
+Present in this Folder Repository are past projects done in Tableau, as well as the datasets and often write-ups that support the project.
 
+The final project for Info 478 was done in a group.
