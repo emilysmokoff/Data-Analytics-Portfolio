@@ -1,3 +1,3 @@
 Inside this folder repository sits R and R Studio Projects I have completed. 
 
-The Info 201 (Foundational Skills for Data Science) Final Project and Info 478 (Population Health Informatics) Projects were completed in groups.
+The Info 201 (Foundational Skills for Data Science) project was completed in a group.
