@@ -1,1 +1,5 @@
 The .zip files in this repository include a start to finish Project completed in Informatics 330 (Relational Databases and Data Modeling) at the University of 
+Washington. 
+
+During this project, I reverse engineered the database of Free People based on a product on the Free People Website. I broke down the relationships between the 
+data present, modeled the database in MySQL, and then performed SQL queries to manipulate the database I had created.
